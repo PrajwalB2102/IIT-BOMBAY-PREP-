@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
 import Planner from './components/Planner';
@@ -12,23 +12,11 @@ import CalendarView from './components/CalendarView';
 import IITInterview from './components/IITInterview';
 import { INITIAL_STATE } from './constants';
 import { AppState, Role, Task, Subject, BudgetTransaction, CalendarEvent, VideoContent, DailyStreak } from './types';
+import useLocalStorage from './hooks/useLocalStorage';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [state, setState] = useState<AppState>(INITIAL_STATE);
-
-  // Load streak from local storage on mount (fallback if not using Drive)
-  useEffect(() => {
-    const savedStreak = localStorage.getItem('iit_streak');
-    if (savedStreak) {
-        try {
-            const parsed = JSON.parse(savedStreak);
-            setState(prev => ({ ...prev, streak: parsed }));
-        } catch (e) {
-            console.error("Failed to load streak", e);
-        }
-    }
-  }, []);
+  const [state, setState] = useLocalStorage<AppState>('appState', INITIAL_STATE);
 
   // Helper to update tasks
   const updateTasks = (newTasks: Task[]) => {
@@ -58,7 +46,6 @@ const App: React.FC = () => {
   // Helper to update streak
   const updateStreak = (newStreak: DailyStreak) => {
     setState(prev => ({ ...prev, streak: newStreak }));
-    localStorage.setItem('iit_streak', JSON.stringify(newStreak));
   };
 
   // Helper to update role

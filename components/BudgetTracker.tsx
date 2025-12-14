@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { BudgetTransaction } from '../types';
 import { Plus, Wallet, TrendingDown, TrendingUp, Settings, Trash2, Edit2, X, Check, Calendar, RefreshCw, Download } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import { DEFAULT_CATEGORIES, COLORS } from '../constants';
+import useLocalStorage from '../hooks/useLocalStorage';
 
 interface BudgetTrackerProps {
   transactions: BudgetTransaction[];
   setTransactions: (t: BudgetTransaction[]) => void;
 }
-
-const DEFAULT_CATEGORIES = ['Books', 'Stationery', 'Online Subscriptions', 'Food', 'Travel', 'Pocket Money', 'Snacks', 'Other'];
 
 const BudgetTracker: React.FC<BudgetTrackerProps> = ({ transactions, setTransactions }) => {
   const [amount, setAmount] = useState('');
@@ -19,7 +19,7 @@ const BudgetTracker: React.FC<BudgetTrackerProps> = ({ transactions, setTransact
   const [editingTransactionId, setEditingTransactionId] = useState<string | null>(null);
 
   // Category Management State
-  const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
+  const [categories, setCategories] = useLocalStorage<string[]>('budget_categories', DEFAULT_CATEGORIES);
   const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [newCategoryInput, setNewCategoryInput] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -176,8 +176,6 @@ const BudgetTracker: React.FC<BudgetTrackerProps> = ({ transactions, setTransact
       else acc.push({ name: t.category, value: t.amount });
       return acc;
     }, []);
-
-  const COLORS = ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6', '#10b981', '#ec4899', '#14b8a6', '#6366f1'];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
